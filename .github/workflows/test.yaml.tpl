@@ -36,6 +36,11 @@ jobs:
       - name: Create Container
         shell: bash
         run: bash .github/scripts/create-container.sh %NAME
+      - name: Create scripts from snippets
+        shell: bash
+        run: |
+            bash create_installer.sh
+            bash create_update.sh
       - name: Install RPortd
         shell: bash
         run: (lxc exec %NAME -- bash -s -- --no-2fa --fqdn rportd.localnet.local)< rportd-installer.sh
