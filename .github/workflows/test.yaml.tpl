@@ -2,7 +2,7 @@ name: Test-%NAME
 on: 
   push:
     branches:
-      - master
+      - main
 jobs:
   Test-%NAME:
     runs-on: ubuntu-latest

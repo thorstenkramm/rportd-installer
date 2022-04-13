@@ -6,7 +6,7 @@ name: Test-ubuntu
 on: 
   push:
     branches:
-      - master
+      - main
 jobs:
   Test-ubuntu:
     runs-on: ubuntu-latest

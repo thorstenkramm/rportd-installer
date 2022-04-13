@@ -6,7 +6,7 @@ name: Test-debian
 on: 
   push:
     branches:
-      - master
+      - main
 jobs:
   Test-debian:
     runs-on: ubuntu-latest

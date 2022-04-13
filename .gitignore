@@ -1,3 +1,4 @@
 rportd-installer.sh
 rportd-update.sh
 *.log
+.idea
