@@ -59,7 +59,7 @@ is_cloud_vm() {
     return 0
   fi
 
-  if which dmidecode >/dev/null 2>&1; then
+  if command -v dmidecode >/dev/null 2>&1; then
     BIOS_VENDOR=$(dmidecode -s bios-vendor)
   else
     return 1
