@@ -40,6 +40,11 @@ jobs:
       - name: Create Container
         shell: bash
         run: bash .github/scripts/create-container.sh rocky
+      - name: Create scripts from snippets
+        shell: bash
+        run: |
+            bash create_installer.sh
+            bash create_update.sh
       - name: Install RPortd
         shell: bash
         run: (lxc exec rocky -- bash -s -- --no-2fa --fqdn rportd.localnet.local)< rportd-installer.sh
