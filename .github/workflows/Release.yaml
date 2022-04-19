@@ -30,4 +30,4 @@ jobs:
           bash create_update.sh
       - name: Release
         shell: bash
-        run: true
+        run: set
