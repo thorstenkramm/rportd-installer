@@ -45,7 +45,7 @@ jobs:
           '$ARGS.named')
           echo "${PAYLOAD}"
           
-          curl https://api.github.com/repos/${GITHUB_REPOSITORY}/releases -v -s --fail -X POST \
+          curl https://api.github.com/repos/${GITHUB_REPOSITORY}/releases -v -s -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: token $TOKEN" -d "$PAYLOAD" -o release.json
           jq < release.json
