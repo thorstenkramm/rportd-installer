@@ -9,7 +9,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: initalize LXD
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          set -e
+          cat /etc/os-release
+          sudo apt-get update >/dev/null
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl jq ncat
+          curl -LOs "https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.linux.x86_64.tar.xz"
+          tar xf shellcheck-v0.8.0.linux.x86_64.tar.xz shellcheck-v0.8.0/shellcheck
+          sudo mv shellcheck-v0.8.0/shellcheck /usr/local/bin/
+          shellcheck -V
+      - name: Initialize LXD
         run: |
           sudo snap install lxd --channel=latest/stable
           sudo chmod o+g '/var/snap/lxd/common/lxd/unix.socket'

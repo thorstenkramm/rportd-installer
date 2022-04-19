@@ -1,8 +1,11 @@
 name: Release
 on:
   push:
-    branches:
-      - main
+    # VERSION=$(date +%y%m).$(date +%d|sed s/^0//).$(date +%k%M|tr -d ' ')
+    # git tag $VERSION -m $VERSION && git push --follow-tags
+    tags:
+      - "*"
+
 jobs:
   Release:
     runs-on: ubuntu-latest
@@ -18,7 +21,7 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl jq ncat
           curl -LOs "https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.linux.x86_64.tar.xz"
           tar xf shellcheck-v0.8.0.linux.x86_64.tar.xz shellcheck-v0.8.0/shellcheck
-          mv shellcheck-v0.8.0/shellcheck /usr/local/bin/
+          sudo mv shellcheck-v0.8.0/shellcheck /usr/local/bin/
           shellcheck -V
       - name: Create scripts from snippets
         shell: bash
@@ -26,7 +29,11 @@ jobs:
           bash create_installer.sh
           bash create_update.sh
       - name: Release
-        shell: bash
-        run: |
-          set
-          ls -la
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          files: |
+            rportd-installer.sh
+            rportd-update.sh
