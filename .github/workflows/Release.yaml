@@ -64,7 +64,7 @@ jobs:
             --data-binary @$FILE \
             "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=$(basename $FILE)"
           done
-      - name: Publish on get.rport.io
+      - name: Publish on Webserver
         shell: bash
         env:
           SSH_PRIV_KEY: ${{ secrets.SSH_PRIV_KEY }}
@@ -72,5 +72,8 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
         run : |
+          test -e ~/.ssh || mkdir ~/.ssh 
+          ls -la ~
           echo "$SSH_PRIV_KEY">~/.ssh/id_ed25519 && chmod 0400 ~/.ssh/id_ed25519
+          ls -la ~/.ssh
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -P ${SSH_PORT} rportd-*.sh ${SSH_USER}@${SSH_HOST}:/var/www/get.rport.io/public/
