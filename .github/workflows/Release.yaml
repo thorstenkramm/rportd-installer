@@ -29,11 +29,5 @@ jobs:
           bash create_installer.sh
           bash create_update.sh
       - name: Release
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          files: |
-            rportd-installer.sh
-            rportd-update.sh
+        shell: bash
+        run: true
