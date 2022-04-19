@@ -27,7 +27,9 @@ jobs:
         shell: bash
         run: |
           bash create_installer.sh
+          sed -i "s/^VERSION=0/VERSION=\"${GITHUB_REF_NAME}\"/g" rportd-installer.sh
           bash create_update.sh
+          sed -i "s/^VERSION=0/VERSION=\"${GITHUB_REF_NAME}\"/g" rportd-update.sh
       - name: Create Release
         shell: bash
         env:
@@ -49,14 +51,26 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: token $TOKEN" -d "$PAYLOAD" -o release.json
           jq < release.json
-      - name: Upload files
+      - name: Upload files to release
         shell: bash
         env:
           TOKEN: ${{ secrets.TOKEN }}
         run: |
           RELEASE_ID=$(jq -r .id < release.json)
-          FILE=rportd-installer.sh
-          curl -s --fail -H "Authorization: token $TOKEN" \
-          -H "Content-Type: $(file -b --mime-type $FILE)" \
-          --data-binary @$FILE \
-          "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=$(basename $FILE)"
+          FILES="rportd-installer.sh rportd-update.sh"
+          for FILE in $FILES;do
+            curl -s --fail -H "Authorization: token $TOKEN" \
+            -H "Content-Type: $(file -b --mime-type $FILE)" \
+            --data-binary @$FILE \
+            "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=$(basename $FILE)"
+          done
+      - name: Publish on get.rport.io
+        shell: bash
+        env:
+          SSH_PRIV_KEY: ${{ secrets.SSH_PRIV_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run : |
+          echo "$SSH_PRIV_KEY">~/.ssh/id_ed25519 && chmod 0400 ~/.ssh/id_ed25519
+          scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -P ${SSH_PORT} rportd-*.sh ${SSH_USER}@${SSH_HOST}:/var/www/get.rport.io/public/

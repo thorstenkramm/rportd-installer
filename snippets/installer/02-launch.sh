@@ -42,8 +42,8 @@ EOF
 # Read the command line options and map to a function call
 #
 TEMP=$(getopt \
-  -o hta:sone:d:c:d:p:i:ug \
-  --long help,unstable,fqdn:,email:,client-port:,api-port:,port-range:,client-url:,uninstall,skip-nat,skip-guacd,totp,no-2fa \
+  -o vhta:sone:d:c:d:p:i:ug \
+  --long version,help,unstable,fqdn:,email:,client-port:,api-port:,port-range:,client-url:,uninstall,skip-nat,skip-guacd,totp,no-2fa \
   -- "$@")
 eval set -- "$TEMP"
 
@@ -56,6 +56,7 @@ USES_NAT=2
 TUNNEL_PORT_RANGE='20000-30000'
 TWO_FA=email
 INSTALL_GUACD=1
+VERSION=0
 
 # extract options and their arguments into variables.
 while true; do
@@ -112,6 +113,10 @@ while true; do
   -g | --skip-guacd)
     INSTALL_GUACD=0
     shift 1
+    ;;
+  -v | --version)
+    echo "Version $VERSION"
+    exit 0
     ;;
   --)
     shift
