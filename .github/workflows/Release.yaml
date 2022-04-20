@@ -1,6 +1,9 @@
 name: Release
 on:
   workflow_run:
+    # The below condition is not ideal, but the only options provided by GitHub.
+    # The release is triggered, if one and not all tests succeed.
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
     workflows: [Test-debian, Test-ubuntu, Test-rocky]
     types:
       - completed
