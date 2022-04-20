@@ -1,0 +1,13 @@
+#
+# This is an example how to serve the generated shell scripts with the Caddy webserver
+#
+:3333 {
+	root * /var/www/rportd-installer/
+	file_server
+	rewrite / /rportd-installer.sh
+	rewrite /update /rportd-update.sh
+	route {
+		header /rportd-installer.sh Content-Disposition "attachment; filename=\"rportd-installer.sh\""
+		header /rportd-update.sh Content-Disposition "attachment; filename=\"rportd-update.sh\""
+	}
+}

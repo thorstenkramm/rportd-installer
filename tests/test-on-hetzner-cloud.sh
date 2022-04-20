@@ -14,6 +14,7 @@ cd "$(dirname $0)"
 #----------------------------------------------------------------------------------------------------------------------
 init() {
   echo " Initializing"
+  (cd ..; ./create_installer.sh)
   # Source your personal settings
   . .env
   # Generate a name for the VM
@@ -49,9 +50,9 @@ create_vm() {
   loc[4]='Ashburn us-east'
   echo "🌎 VM will be created in ${loc[$LOCATION]}"
   echo "🚴 Creating VM now ... "
-  hcloud server create --type 1 --name "${VM_NAME}" --location "$LOCATION" --image ${OS_IMAGE} --ssh-key "${SSH_KEY}" >hcloud.log
+  hcloud server create --type 1 --name "${VM_NAME}" --location "$LOCATION" --image ${OS_IMAGE} --ssh-key "${SSH_KEY}" >"$LOG_FILE"
   sleep 5
-  IP=$(grep "^IPv4" hcloud.log | awk '{print $2}')
+  IP=$(grep "^IPv4" "$LOG_FILE" | awk '{print $2}')
   echo "🚚 VM Created with IP address $IP"
 
   for i in $(seq 60); do
@@ -74,6 +75,7 @@ create_random_fqdn() {
     echo "🏠 Creating DNS record ${FQDN} = ${IP} using daddy cli"
     daddy add -d "${GODADDY_TLD}" -t A -n "${VM_NAME}" -v "$IP"
     INSTALL_APPEND=$INSTALL_APPEND" --fqdn ${FQDN}"
+    echo "FQDN: ${FQDN}" >>"$LOG_FILE"
   fi
 }
 
@@ -84,7 +86,7 @@ create_random_fqdn() {
 #       RETURNS:
 #----------------------------------------------------------------------------------------------------------------------
 execute_installer() {
-  echo "🖥️ executing 'bash rportd-installer.sh ${INSTALL_APPEND}' remotely now."
+  echo "🖥️  executing 'bash rportd-installer.sh ${INSTALL_APPEND}' remotely now."
   test -e remote-out.log && rm -f remote-out.log
   SSH_OPTS="-o StrictHostKeyChecking=no -o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -l root"
   ssh ${SSH_OPTS} "${IP}" "bash -s -- ${INSTALL_APPEND}" <../rportd-installer.sh | tee remote-out.log
@@ -111,15 +113,18 @@ do_tests() {
 #----------------------------------------------------------------------------------------------------------------------
 delete_vm() {
   # Delete the VM
-  VM_ID=$(grep "Server .* created" hcloud.log | awk '{print $2}')
+  VM_ID=$(grep "Server .* created" $LOG_FILE | awk '{print $2}')
   echo "💣 Deleting VM ${VM_NAME} [${VM_ID}]"
   hcloud server delete "$VM_ID"
 
   # Delete the FQDN
+  FQDN=$(grep "^FQDN" "$LOG_FILE" | awk '{print $2}')
   if echo "$FDQN" | grep -q "${GODADDY_TLD}"; then
     echo "Deleting FQDN ${FQDN}"
-    daddy remove -d "${GODADDY_TLD}" -t A -n "${VM_NAME}" -f
-    daddy show -d "${GODADDY_TLD}"
+    TLD=$(echo "$FQDN"|cut -d'.' -f2-3)
+    NAME=$(echo "$FQDN"|cut -d'.' -f1)
+    daddy remove -d "${TLD}" -t A -n "${NAME}" -f
+    daddy show -d "${TLD}"
   fi
 }
 
@@ -137,17 +142,19 @@ Usage $0 [OPTION(s)]
 -f,--fqdn use FQDN for the new rport server instead of generating a random one.
 -r,--random-fqdn generate a random FQDN locally before executing the installer.
 -i,--installer-args append string(s) to the rportd-installer.sh
+-d,--delete-vm
 "
 }
 
 # parse options
 TEMP=$(getopt \
-  -o hri: \
-  --long help,random-fqdn,installer-args: \
+  -o dhri: \
+  --long help,random-fqdn,delete-vm,installer-args: \
   -- "$@")
 eval set -- "$TEMP"
 INSTALL_APPEND=""
 RANDOM_FQDN=0
+LOG_FILE="cloud-test.log"
 
 # extract options and their arguments into variables.
 while true; do
@@ -163,6 +170,10 @@ while true; do
   -i | --installer-args)
     INSTALL_APPEND="$2"
     shift 2
+    ;;
+  -d | --delete-vm)
+    delete_vm
+    exit 0
     ;;
   --)
     shift
