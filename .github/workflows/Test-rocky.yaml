@@ -1,4 +1,4 @@
-name: Test-debian
+name: Test-Rocky
 on:
   push:
     branches:

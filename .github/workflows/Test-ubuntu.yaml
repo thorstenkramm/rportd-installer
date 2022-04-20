@@ -1,4 +1,4 @@
-name: Test-debian
+name: Test-Ubuntu
 on:
   push:
     branches:
