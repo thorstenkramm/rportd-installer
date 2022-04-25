@@ -1,0 +1,10 @@
+name: Test-Jammy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Test-jammy:
+    uses: cloudradar-monitoring/rportd-installer/.github/workflows/Test_tpl.yaml@main
+    with:
+      distribution: jammy

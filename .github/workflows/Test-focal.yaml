@@ -1,10 +1,10 @@
-name: Test-Ubuntu
+name: Test-Focal
 on:
   push:
     branches:
       - main
 jobs:
-  Test-ubuntu:
+  Test-focal:
     uses: cloudradar-monitoring/rportd-installer/.github/workflows/Test_tpl.yaml@main
     with:
-      distribution: ubuntu
+      distribution: focal

@@ -1,10 +1,10 @@
-name: Test-Debian
+name: Test-Bullseye
 on: 
   push:
     branches:
       - main
 jobs:
-  Test-debian:
+  Test-bullseye:
     uses: cloudradar-monitoring/rportd-installer/.github/workflows/Test_tpl.yaml@main
     with:
-      distribution: debian
+      distribution: bullseye
