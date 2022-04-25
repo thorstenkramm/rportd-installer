@@ -4,7 +4,7 @@ on:
     branches:
       - main
 jobs:
-  Test-debian:
-    uses: thorstenkramm/rportd-installer/.github/workflows/Test_tpl.yaml@main
+  Test-ubuntu:
+    uses: cloudradar-monitoring/rportd-installer/.github/workflows/Test_tpl.yaml@main
     with:
       distribution: ubuntu

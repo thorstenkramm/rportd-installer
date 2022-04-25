@@ -15,7 +15,7 @@ echo "🐇 Launching container now. Wait ... "
 case $CONTAINER in 
     ubuntu)
         lxc launch ubuntu:20.04 container -q
-        POST_EXEC+=("apt-get -y update;apt get -y install jq")
+        POST_EXEC+=("apt-get -y update;apt-get -y install jq")
     ;;
     debian)
         lxc launch images:debian/11 container -q

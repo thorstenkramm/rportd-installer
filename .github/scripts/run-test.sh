@@ -32,7 +32,8 @@ curl -sfI ${URL}
 # Request the 2FA Token
 # Returns a JWT needed for /verify-2fa
 curl -fs -u admin:"${ADMIN_PASSWORD}" ${URL}/login -o auth.json
-jq < auth.json
+test -e auth.json
+
 MFA_TOKEN=$(grep -Eo "TOKEN=[A-Z a-z 0-9]*" /var/log/rport/2fa-sender.log | tail -n1 | cut -d= -f2)
 TOKEN=$(jq -r .data.token < auth.json)
 if [ -z "$MFA_TOKEN" ]; then
@@ -44,13 +45,13 @@ curl -s "${URL}/verify-2fa?token-lifetime=7200" \
 -H "Authorization: Bearer $TOKEN" \
 -H "Content-Type: application/json" -X POST \
 --data-raw "{\"username\": \"admin\",\"token\": \"${MFA_TOKEN}\"}" -o finalauth.json
-jq < finalauth.json
+test -e finalauth.json
 
 # Update the TOKEN var needed for further requests
 TOKEN=$(jq -r .data.token < finalauth.json)
 
 # Get the list of clients
-curl -fs -H "Authorization: Bearer $TOKEN" ${URL}/clients|jq
+curl -fs -H "Authorization: Bearer $TOKEN" ${URL}/clients
 
 echo ""
 echo "🎰 BINGO. Test finished"
