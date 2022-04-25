@@ -6,16 +6,36 @@ enable_email_2fa() {
 # Check https://kb.rport.io/install-the-rport-server/enable-two-factor-authentication
 # and learn how to use your own SMTP server or alternative delivery methods
 #
+
+# Source a configuration if available
+CONF="/etc/rport/2fa-sender.conf"
+[ -e "$CONF" ] && . $CONF
+
+log() {
+  [ -z "$LOG_LEVEL" ] && return 0
+  [ -z "$LOG_FILE" ] && LOG_FILE="/var/log/rport/2fa-sender.log"
+  LOG_LINE=("$(date) -- Token sent to ${RPORT_2FA_SENDTO}; ")
+  if [ $LOG_LEVEL = 'debug' ];then
+    LOG_LINE+=("TOKEN=${RPORT_2FA_TOKEN}; ")
+  fi
+  LOG_LINE+=("Response: $1")
+  echo ${LOG_LINE[*]}>>"$LOG_FILE"
+}
+
+
+# Trigger sending the email via a public API
 RESPONSE=$(curl -Ss https://free-2fa-sender.rport.io \
  -F email=${RPORT_2FA_SENDTO} \
  -F token=${RPORT_2FA_TOKEN} \
  -F ttl=${RPORT_2FA_TOKEN_TTL} \
  -F url="_URL_" 2>&1)
-if echo $RESPONSE|grep -q "Message sent";then
+if echo $RESPONSE|grep -q "\"Message sent\"";then
     echo "Token sent via email"
+    log "Message sent"
     exit 0
 else
     >&2 echo $RESPONSE
+    log "Error \"$RESPONSE\""
     exit 1
 fi
 EOF

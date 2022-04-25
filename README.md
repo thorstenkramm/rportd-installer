@@ -19,13 +19,13 @@ While the RPort server itself is a statically compiled binary that runs ony almo
 
 Currently, supported:
 
-Distribution | Version | supported Archs             |Guacd support¹
+Distribution | Version | supported Archs                |Guacd support¹
 -------------|---------|-----------------------------|------------------
-Ubuntu Linux |20.04 (focal)| `x86_64` `aarch64`          | yes
-Debian | 11 (bullseye) | `x86_64` `aarch64`          | yes
-Debian |10 (buster) | `x86_64` `aarch64` `armv7l` | yes
-RHEL²   | 8          | `x86_64`                    | no
-*¹) For RDP on the browser, rport depends on a guacamole proxy, just the tiny proxy binary installed via [Debian packages](https://bitbucket.org/cloudradar/rport-guacamole/src/main/). The installer handles it hassle-free.*
+Ubuntu Linux |20.04 (focal)| `x86_64` `aarch64`      | yes
+Debian | 11 (bullseye) | `x86_64` `aarch64` `armv7l` | yes
+Debian |10 (buster) | `x86_64` `aarch64` `armv7l`    | yes
+RHEL²   | 8          | `x86_64`                      | no
+*¹) For RDP on the browser, rportd depends on a guacamole proxy, just the tiny proxy binary installed via [Debian packages](https://bitbucket.org/cloudradar/rport-guacamole/src/main/). The installer handles it hassle-free.*
 <br>*²) Includes all derivates like CentOS, Alma, and Rocky Linux.*
 
 > 🧏 If you have the free choice, **we recommend Debian 11**. It's lean, and it has everything on board you need for a secure RPort server.
@@ -39,4 +39,14 @@ Then download the script and execute it.
 curl -JO https://get.rport.io
 sudo bash rportd-installer.sh -h
 sudo bash rportd-installer.sh <YOUR-OPTIONS>
+```
+
+## Update an RPort server
+We also provide a script for an easy update to the latest stable version.
+
+Just download and execute.
+```shell
+curl -JO https://get.rport.io/update
+sudo bash rportd-update.sh -h
+sudo bash rportd-update.sh <YOUR-OPTIONS>
 ```

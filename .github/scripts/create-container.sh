@@ -15,15 +15,15 @@ echo "🐇 Launching container now. Wait ... "
 case $CONTAINER in 
     ubuntu)
         lxc launch ubuntu:20.04 container -q
-        POST_EXEC+=("apt-get -y update")
+        POST_EXEC+=("apt-get -y update;apt get -y install jq")
     ;;
     debian)
         lxc launch images:debian/11 container -q
-        POST_EXEC+=("apt-get -y update;apt-get -y install curl")
+        POST_EXEC+=("apt-get -y update;apt-get -y install curl jq")
     ;;
     rocky)
         lxc launch images:rockylinux/8 container -q
-        POST_EXEC+=("dnf -y install epel-release")
+        POST_EXEC+=("dnf -y install epel-release jq")
     ;;
     *)
         echo "Unsupported OS"

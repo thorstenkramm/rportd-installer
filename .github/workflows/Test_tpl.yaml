@@ -1,4 +1,4 @@
-name: Test
+name: Test Re-Usable Template
 on:
   workflow_call:
     inputs:
@@ -56,7 +56,7 @@ jobs:
             bash create_update.sh
       - name: Install RPortd
         shell: bash
-        run: (lxc exec container -- bash -s -- --no-2fa --fqdn rportd.localnet.local)< rportd-installer.sh
+        run: (lxc exec container -- bash -s -- -e test@example.com --fqdn rportd.localnet.local)< rportd-installer.sh
       - name: Run Test
         shell: bash
         run: (lxc exec container -- bash)< .github/scripts/run-test.sh
